@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Karir — PT. Bravo Komando Group</title>
+  <meta name="description" content="Temukan lowongan kerja di PT. Bravo Komando Group. Bergabunglah bersama tim profesional kami." />
+  <link rel="icon" href="images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar" class="scrolled">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="images/bkGroup.png" alt="PT. Bravo Komando Group" width="40" height="40" />
+      <div>
+        <p class="nav-logo-title">PT. BRAVO KOMANDO</p>
+        <p class="nav-logo-sub">GROUP</p>
+      </div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#beranda">Beranda</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a href="index.html#layanan">Layanan</a>
+      <a href="index.html#nilai">Nilai</a>
+      <a href="index.html#visi-misi">Visi &amp; Misi</a>
+      <a href="index.html#tim">Tim Kami</a>
+      <a href="karir.html" class="text-primary">Karir</a>
+      <a href="index.html#kontak">Kontak</a>
+      <a href="index.html#kontak" class="btn-nav">Hubungi Kami</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="container page-hero-inner">
+    <span class="page-hero-label">Bergabung Bersama Kami</span>
+    <h1>Lowongan Kerja</h1>
+    <p>Jadilah bagian dari tim PT. Bravo Komando Group. Temukan posisi yang sesuai dengan keahlian dan passion Anda.</p>
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" placeholder="Cari posisi, lokasi, departemen..." />
+    </div>
+  </div>
+</div>
+
+<!-- LOWONGAN LIST -->
+<section class="karir-list-section">
+  <div class="container">
+    <p class="result-count" id="resultCount"></p>
+    <div class="lowongan-grid" id="lowonganGrid">
+      <div class="loading-skeleton"></div>
+      <div class="loading-skeleton"></div>
+      <div class="loading-skeleton"></div>
+      <div class="loading-skeleton"></div>
+      <div class="loading-skeleton"></div>
+      <div class="loading-skeleton"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="images/bkGroup.png" alt="PT. Bravo Komando Group" width="40" height="40" />
+        <div>
+          <p class="footer-logo-title">PT. BRAVO KOMANDO</p>
+          <p class="footer-logo-sub">GROUP</p>
+        </div>
+      </div>
+      <p>Terpercaya, Profesional, Handal dan Berintegritas untuk menjadi partner perusahaan Anda.</p>
+    </div>
+    <div class="footer-nav">
+      <h4>Navigasi</h4>
+      <ul>
+        <li><a href="index.html#beranda">Beranda</a></li>
+        <li><a href="index.html#tentang">Tentang Kami</a></li>
+        <li><a href="index.html#layanan">Layanan</a></li>
+        <li><a href="index.html#nilai">Nilai Perusahaan</a></li>
+        <li><a href="index.html#visi-misi">Visi &amp; Misi</a></li>
+        <li><a href="index.html#tim">Tim Kami</a></li>
+        <li><a href="karir.html">Karir</a></li>
+        <li><a href="index.html#kontak">Kontak</a></li>
+      </ul>
+    </div>
+    <div class="footer-kontak">
+      <h4>Kontak</h4>
+      <ul>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Jl. Ir. H. Juanda Ruko 88.H Panembong RT.002 RW.002, Desa Limbangansari, Kec./Kab. Cianjur, Jawa Barat 43211</span>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.49 16.92z"/></svg>
+          <a href="tel:+6208535351717">0853 5351 7176</a>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:ptbravokomandogrup@gmail.com">ptbravokomandogrup@gmail.com</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="tahun"></span> PT. Bravo Komando Group. All rights reserved.</p>
+    <a href="admin/login.html">Admin Panel</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+/* ─── KARIR PAGE LOGIC ─── */
+let allLowongan = []
+
+async function initKarirPage() {
+  const { data } = await sb.from('lowongan')
+    .select('*')
+    .eq('status', 'aktif')
+    .order('created_at', { ascending: false })
+  allLowongan = data || []
+  renderLowongan(allLowongan)
+}
+
+function renderLowongan(list) {
+  const grid = document.getElementById('lowonganGrid')
+  const count = document.getElementById('resultCount')
+  if (!grid) return
+
+  if (list.length === 0) {
+    count.innerHTML = ''
+    grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <p style="font-size:1rem;font-weight:600;margin-bottom:.5rem;">Tidak ada lowongan ditemukan</p>
+        <p style="font-size:.85rem;">Pantau terus halaman ini untuk update lowongan terbaru.</p>
+      </div>`
+    return
+  }
+
+  count.innerHTML = `Menampilkan <strong>${list.length}</strong> lowongan`
+  grid.innerHTML = list.map(item => lowonganCardHTML(item)).join('')
+}
+
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase()
+  const filtered = allLowongan.filter(item =>
+    (item.posisi || '').toLowerCase().includes(q) ||
+    (item.lokasi || '').toLowerCase().includes(q) ||
+    (item.departemen || '').toLowerCase().includes(q)
+  )
+  renderLowongan(filtered)
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tahun').textContent = new Date().getFullYear()
+  initKarirPage()
+})
+</script>
+</body>
+</html>

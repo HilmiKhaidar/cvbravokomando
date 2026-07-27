@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kelola Layanan — Admin Bravo Komando</title>
+  <link rel="icon" href="../images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+<div class="admin-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../images/bkGroup.png" alt="BK Group" width="36" height="36" />
+      <div><p class="sidebar-logo-title">BRAVO KOMANDO</p><p class="sidebar-logo-sub">Admin Panel</p></div>
+    </div>
+    <div id="sidebar"></div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Kelola Layanan</h1>
+      <div class="admin-header-right" id="adminHeaderRight"></div>
+    </header>
+    <div class="page-body">
+      <div class="page-toolbar">
+        <p class="page-count" id="pageCount">Memuat...</p>
+        <button class="btn btn-primary" onclick="openAdd()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Layanan
+        </button>
+      </div>
+      <div id="layananGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+        <div class="skeleton" style="height:8rem;border-radius:1rem;"></div>
+        <div class="skeleton" style="height:8rem;border-radius:1rem;"></div>
+        <div class="skeleton" style="height:8rem;border-radius:1rem;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modalOverlay" onclick="if(event.target.id==='modalOverlay')closeModal('modalOverlay')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Tambah Layanan</h2>
+      <button class="btn-icon" onclick="closeModal('modalOverlay')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form onsubmit="handleSave(event)">
+      <!-- Icon picker -->
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label class="form-label">Pilih Icon</label>
+        <div class="icon-picker" id="iconPicker"></div>
+        <p id="iconSelected" style="font-size:.75rem;color:var(--muted);margin-top:.35rem;"></p>
+      </div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="form-group" style="grid-column:span 2">
+          <label class="form-label">Judul *</label>
+          <input type="text" id="fTitle" class="form-input" placeholder="Nama layanan" required />
+        </div>
+      </div>
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="form-group">
+          <label class="form-label">Urutan</label>
+          <input type="number" id="fUrutan" class="form-input" value="0" min="0" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label class="form-label">Deskripsi *</label>
+        <textarea id="fDesc" class="form-textarea" rows="3" placeholder="Deskripsi layanan..." required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('modalOverlay')">Batal</button>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+@media(max-width:1024px){#layananGrid{grid-template-columns:repeat(2,1fr)!important;}}
+@media(max-width:640px) {#layananGrid{grid-template-columns:1fr!important;}}
+.layanan-card-admin {
+  background:#fff;border-radius:1rem;padding:1.25rem;
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+  position:relative;transition:box-shadow .2s,border-color .2s;
+}
+.layanan-card-admin:hover{box-shadow:var(--shadow);border-color:rgba(14,165,233,.3);}
+.layanan-card-actions{
+  position:absolute;top:.75rem;right:.75rem;
+  display:flex;gap:.25rem;opacity:0;transition:opacity .15s;
+}
+.layanan-card-admin:hover .layanan-card-actions{opacity:1;}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+<script>
+let editId = null
+let selectedIcon = ''
+const ICON_KEYS = ['Users','Search','FileText','TrendingUp','Sparkles','Wrench','Car','Briefcase','Monitor','Settings','UserCheck']
+
+function buildIconPicker() {
+  const picker = document.getElementById('iconPicker')
+  picker.innerHTML = ICON_KEYS.map(k => `
+    <div class="icon-opt ${selectedIcon===k?'active':''}" data-icon="${k}" onclick="selectIcon('${k}')">
+      ${ICONS[k] || ''}
+    </div>`).join('')
+}
+
+function selectIcon(name) {
+  selectedIcon = name
+  document.getElementById('iconSelected').textContent = `Dipilih: ${name}`
+  buildIconPicker()
+}
+
+async function fetchLayanan() {
+  const { data } = await sb.from('layanan').select('*').order('urutan', { ascending: true })
+  renderGrid(data || [])
+}
+
+function renderGrid(rows) {
+  document.getElementById('pageCount').textContent = `${rows.length} layanan terdaftar`
+  if (rows.length === 0) {
+    document.getElementById('layananGrid').innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <p>Belum ada layanan. Tambah layanan pertama!</p>
+      </div>`
+    return
+  }
+  document.getElementById('layananGrid').innerHTML = rows.map(row => {
+    const iconHtml = ICONS[row.icon] || `<span>${row.icon||''}</span>`
+    return `
+      <div class="layanan-card-admin">
+        <div class="layanan-card-actions">
+          <button class="btn-icon" onclick='openEdit(${JSON.stringify(row)})' title="Edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon danger" onclick="handleDelete('${row.id}')" title="Hapus">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </div>
+        <div style="width:2.75rem;height:2.75rem;border-radius:.75rem;background:rgba(14,165,233,.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;color:#0ea5e9;">
+          ${iconHtml}
+        </div>
+        <h3 style="font-weight:800;font-size:.875rem;color:var(--text);margin-bottom:.35rem;line-height:1.3;">${esc(row.title)}</h3>
+        <p style="color:var(--muted);font-size:.8rem;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(row.description)}</p>
+        <p style="color:var(--light);font-size:.75rem;margin-top:.75rem;">Urutan #${row.urutan}</p>
+      </div>`
+  }).join('')
+}
+
+function openAdd() {
+  editId = null; selectedIcon = ''
+  document.getElementById('modalTitle').textContent = 'Tambah Layanan'
+  document.getElementById('fTitle').value = ''
+  document.getElementById('fDesc').value  = ''
+  document.getElementById('fUrutan').value = 0
+  document.getElementById('iconSelected').textContent = ''
+  buildIconPicker()
+  openModal('modalOverlay')
+}
+
+function openEdit(row) {
+  editId = row.id; selectedIcon = row.icon || ''
+  document.getElementById('modalTitle').textContent = 'Edit Layanan'
+  document.getElementById('fTitle').value  = row.title || ''
+  document.getElementById('fDesc').value   = row.description || ''
+  document.getElementById('fUrutan').value = row.urutan || 0
+  document.getElementById('iconSelected').textContent = selectedIcon ? `Dipilih: ${selectedIcon}` : ''
+  buildIconPicker()
+  openModal('modalOverlay')
+}
+
+async function handleSave(e) {
+  e.preventDefault()
+  const btn = document.getElementById('saveBtn')
+  btn.disabled = true; btn.textContent = 'Menyimpan...'
+  const payload = {
+    icon: selectedIcon,
+    title: document.getElementById('fTitle').value,
+    description: document.getElementById('fDesc').value,
+    urutan: parseInt(document.getElementById('fUrutan').value) || 0,
+  }
+  const { error } = editId
+    ? await sb.from('layanan').update(payload).eq('id', editId)
+    : await sb.from('layanan').insert(payload)
+  btn.disabled = false; btn.textContent = 'Simpan'
+  if (error) { showToast('Gagal menyimpan', 'error'); return }
+  showToast(editId ? 'Layanan diperbarui' : 'Layanan ditambahkan')
+  closeModal('modalOverlay')
+  fetchLayanan()
+}
+
+async function handleDelete(id) {
+  if (!confirmDel('Hapus layanan ini?')) return
+  const { error } = await sb.from('layanan').delete().eq('id', id)
+  if (error) { showToast('Gagal menghapus', 'error'); return }
+  showToast('Layanan dihapus')
+  fetchLayanan()
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth()
+  if (!session) return
+  initSidebar('layanan.html')
+  initAdminHeader()
+  fetchLayanan()
+})
+</script>
+</body>
+</html>

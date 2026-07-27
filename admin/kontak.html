@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Info Kontak — Admin Bravo Komando</title>
+  <link rel="icon" href="../images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+<div class="admin-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../images/bkGroup.png" alt="BK Group" width="36" height="36" />
+      <div><p class="sidebar-logo-title">BRAVO KOMANDO</p><p class="sidebar-logo-sub">Admin Panel</p></div>
+    </div>
+    <div id="sidebar"></div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Info Kontak</h1>
+      <div class="admin-header-right" id="adminHeaderRight"></div>
+    </header>
+
+    <div class="page-body" style="max-width:52rem;">
+      <p style="color:var(--muted);font-size:.875rem;margin-bottom:1.5rem;">
+        Edit nomor telepon, email, dan alamat yang tampil di website dan footer.
+      </p>
+
+      <!-- Loading -->
+      <div id="kontenLoading" class="loading-center"><div class="spinner-lg spinner"></div></div>
+
+      <!-- Form -->
+      <div id="formWrap" class="hidden">
+        <div class="card card-p" style="margin-bottom:1rem;">
+
+          <!-- Telepon -->
+          <div style="display:flex;align-items:center;gap:.875rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;">
+            <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.49 16.92z"/></svg>
+            </div>
+            <div style="flex:1;">
+              <label class="form-label">Nomor Telepon / WhatsApp</label>
+              <input type="text" id="fTelepon" class="form-input" placeholder="08xx xxxx xxxx" oninput="markDirty()" style="margin-top:.35rem;" />
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div style="display:flex;align-items:center;gap:.875rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;">
+            <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div style="flex:1;">
+              <label class="form-label">Email</label>
+              <input type="email" id="fEmail" class="form-input" placeholder="email@perusahaan.com" oninput="markDirty()" style="margin-top:.35rem;" />
+            </div>
+          </div>
+
+          <!-- Alamat -->
+          <div style="display:flex;align-items:flex-start;gap:.875rem;">
+            <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.35rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div style="flex:1;">
+              <label class="form-label">Alamat Lengkap</label>
+              <textarea id="fAlamat" class="form-textarea" rows="3" placeholder="Alamat lengkap perusahaan..." oninput="markDirty()" style="margin-top:.35rem;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info box -->
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:.75rem;padding:.875rem 1rem;display:flex;align-items:flex-start;gap:.625rem;margin-bottom:1.5rem;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p style="color:#1d4ed8;font-size:.8rem;line-height:1.6;">Perubahan akan otomatis ditampilkan di section Kontak dan Footer website setelah disimpan.</p>
+        </div>
+
+        <!-- Preview -->
+        <div class="card card-p" style="margin-bottom:1.5rem;">
+          <h3 style="font-weight:800;font-size:.875rem;color:var(--text);margin-bottom:1rem;">Preview Tampilan Website</h3>
+          <div style="display:flex;flex-direction:column;gap:.75rem;" id="previewBox">
+            <div style="display:flex;gap:.75rem;background:#f8fafc;border-radius:.75rem;padding:1rem;">
+              <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div><p style="color:var(--light);font-size:.75rem;margin-bottom:.2rem;">Alamat</p><p id="pvAlamat" style="font-size:.8rem;font-weight:600;color:var(--text);line-height:1.5;">-</p></div>
+            </div>
+            <div style="display:flex;gap:.75rem;background:#f8fafc;border-radius:.75rem;padding:1rem;">
+              <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.49 16.92z"/></svg>
+              </div>
+              <div><p style="color:var(--light);font-size:.75rem;margin-bottom:.2rem;">Telepon</p><p id="pvTelepon" style="font-size:.8rem;font-weight:600;color:var(--text);">-</p></div>
+            </div>
+            <div style="display:flex;gap:.75rem;background:#f8fafc;border-radius:.75rem;padding:1rem;">
+              <div style="width:2.25rem;height:2.25rem;background:rgba(14,165,233,.1);border-radius:.625rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div><p style="color:var(--light);font-size:.75rem;margin-bottom:.2rem;">Email</p><p id="pvEmail" style="font-size:.8rem;font-weight:600;color:var(--text);">-</p></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="saveBtn" onclick="handleSave()" disabled>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+<script>
+let originalData = {}
+let dirty = false
+
+function markDirty() {
+  dirty = true
+  document.getElementById('saveBtn').disabled = false
+  // sync preview live
+  document.getElementById('pvTelepon').textContent = document.getElementById('fTelepon').value || '-'
+  document.getElementById('pvEmail').textContent   = document.getElementById('fEmail').value   || '-'
+  document.getElementById('pvAlamat').textContent  = document.getElementById('fAlamat').value  || '-'
+}
+
+async function loadKontak() {
+  const { data } = await sb.from('konten').select('kunci, nilai')
+    .in('kunci', ['kontak_telepon','kontak_email','kontak_alamat'])
+
+  if (data) data.forEach(r => { originalData[r.kunci] = r.nilai })
+
+  document.getElementById('fTelepon').value = originalData.kontak_telepon || ''
+  document.getElementById('fEmail').value   = originalData.kontak_email   || ''
+  document.getElementById('fAlamat').value  = originalData.kontak_alamat  || ''
+
+  document.getElementById('pvTelepon').textContent = originalData.kontak_telepon || '-'
+  document.getElementById('pvEmail').textContent   = originalData.kontak_email   || '-'
+  document.getElementById('pvAlamat').textContent  = originalData.kontak_alamat  || '-'
+
+  document.getElementById('kontenLoading').classList.add('hidden')
+  document.getElementById('formWrap').classList.remove('hidden')
+}
+
+async function handleSave() {
+  const btn = document.getElementById('saveBtn')
+  btn.disabled = true; btn.textContent = 'Menyimpan...'
+
+  const vals = {
+    kontak_telepon: document.getElementById('fTelepon').value,
+    kontak_email:   document.getElementById('fEmail').value,
+    kontak_alamat:  document.getElementById('fAlamat').value,
+  }
+
+  const { error } = await sb.from('konten').upsert(
+    Object.entries(vals).map(([kunci, nilai]) => ({ kunci, nilai })),
+    { onConflict: 'kunci' }
+  )
+
+  if (error) {
+    showToast('Gagal menyimpan: ' + error.message, 'error')
+    btn.disabled = false
+  } else {
+    Object.assign(originalData, vals)
+    dirty = false
+    showToast('Info kontak berhasil disimpan!')
+  }
+
+  btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Simpan`
+  btn.disabled = !dirty
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth()
+  if (!session) return
+  initSidebar('kontak.html')
+  initAdminHeader()
+  loadKontak()
+})
+</script>
+</body>
+</html>

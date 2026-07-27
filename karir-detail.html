@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Lowongan — PT. Bravo Komando Group</title>
+  <meta name="description" content="Detail lowongan dan form lamaran PT. Bravo Komando Group." />
+  <link rel="icon" href="images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar" class="scrolled">
+  <div class="container nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="images/bkGroup.png" alt="PT. Bravo Komando Group" width="40" height="40" />
+      <div>
+        <p class="nav-logo-title">PT. BRAVO KOMANDO</p>
+        <p class="nav-logo-sub">GROUP</p>
+      </div>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html#beranda">Beranda</a>
+      <a href="index.html#tentang">Tentang Kami</a>
+      <a href="index.html#layanan">Layanan</a>
+      <a href="index.html#nilai">Nilai</a>
+      <a href="index.html#visi-misi">Visi &amp; Misi</a>
+      <a href="index.html#tim">Tim Kami</a>
+      <a href="karir.html" class="text-primary">Karir</a>
+      <a href="index.html#kontak">Kontak</a>
+      <a href="index.html#kontak" class="btn-nav">Hubungi Kami</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- LOADING STATE -->
+<div id="pageLoading" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;">
+  <div style="width:2.5rem;height:2.5rem;border:4px solid #e2e8f0;border-top-color:#0ea5e9;border-radius:50%;animation:spin .8s linear infinite;"></div>
+</div>
+
+<!-- NOT FOUND STATE -->
+<div id="pageNotFound" class="hidden" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:2rem;">
+  <div style="text-align:center;">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin:0 auto 1rem;display:block;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    <h2 style="color:#1e293b;font-size:1.25rem;font-weight:800;margin-bottom:.5rem;">Lowongan Tidak Ditemukan</h2>
+    <p style="color:#64748b;font-size:.9rem;margin-bottom:1.5rem;">Lowongan mungkin sudah ditutup atau tidak tersedia.</p>
+    <a href="karir.html" class="btn-primary">Lihat Lowongan Lain</a>
+  </div>
+</div>
+
+<!-- SUCCESS STATE -->
+<div id="pageSuccess" class="hidden" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f8fafc;padding:2rem;">
+  <div style="background:#fff;border-radius:1.5rem;padding:3rem 2.5rem;max-width:28rem;width:100%;text-align:center;box-shadow:0 4px 6px -1px rgba(0,0,0,.08);border:1px solid #e2e8f0;">
+    <div style="width:4rem;height:4rem;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    <h2 style="color:#1e293b;font-size:1.5rem;font-weight:900;margin-bottom:.5rem;">Lamaran Terkirim!</h2>
+    <p style="color:#64748b;font-size:.9rem;line-height:1.7;margin-bottom:1.75rem;">
+      Terima kasih telah melamar posisi <strong id="successPosisi" style="color:#1e293b;"></strong>.
+      Kami akan menghubungi Anda jika kualifikasi sesuai.
+    </p>
+    <a href="karir.html" class="btn-primary">Lihat Lowongan Lain</a>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="pageContent" class="hidden">
+
+  <!-- DETAIL HEADER -->
+  <div class="page-hero" id="detailHero">
+    <div class="container">
+      <a href="karir.html" class="back-link">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Kembali ke Lowongan
+      </a>
+      <div class="detail-header-tags" id="detailTags"></div>
+      <h1 class="detail-title" id="detailJudul"></h1>
+      <div class="detail-meta" id="detailMeta"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL BODY -->
+  <div style="background:#f8fafc;padding-bottom:5rem;">
+    <div class="container detail-content">
+
+      <!-- Kiri: deskripsi & kualifikasi -->
+      <div id="detailLeft">
+        <div class="detail-card" id="cardDeskripsi" style="display:none;">
+          <h2>Deskripsi Pekerjaan</h2>
+          <p id="detailDeskripsi"></p>
+        </div>
+        <div class="detail-card" id="cardKualifikasi" style="display:none;">
+          <h2>Kualifikasi</h2>
+          <p id="detailKualifikasi"></p>
+        </div>
+      </div>
+
+      <!-- Kanan: form lamaran -->
+      <div>
+        <div class="form-card">
+          <h2>Kirim Lamaran</h2>
+
+          <!-- Success inline (form replaced) -->
+          <div id="formSuccessInline" class="hidden" style="text-align:center;padding:1.5rem 0;">
+            <div style="width:3.5rem;height:3.5rem;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h4 style="color:#1e293b;font-weight:800;margin-bottom:.4rem;">Lamaran Terkirim!</h4>
+            <p style="color:#64748b;font-size:.85rem;">Kami akan menghubungi Anda segera.</p>
+          </div>
+
+          <!-- Error -->
+          <div id="formErrorDetail" class="form-error hidden"></div>
+
+          <!-- Form -->
+          <form id="lamaranForm" class="kontak-form" onsubmit="submitLamaran(event)">
+            <div class="form-group">
+              <label>Nama Lengkap *</label>
+              <input type="text" id="lNama" placeholder="Nama Anda" required />
+            </div>
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email" id="lEmail" placeholder="email@anda.com" required />
+            </div>
+            <div class="form-group">
+              <label>Telepon *</label>
+              <input type="tel" id="lTelepon" placeholder="08xx xxxx xxxx" required />
+            </div>
+            <div class="form-group">
+              <label>Upload CV (PDF/DOC)</label>
+              <label class="upload-label" id="uploadLabel">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                <span id="uploadText">Klik untuk upload file CV</span>
+                <input type="file" id="lCvFile" accept=".pdf,.doc,.docx" onchange="handleFileChange(this)" />
+              </label>
+            </div>
+            <div class="form-group">
+              <label>Cover Letter</label>
+              <textarea id="lPesan" rows="3" placeholder="Ceritakan sedikit tentang diri Anda..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary btn-full" id="btnLamar">Kirim Lamaran</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #pageContent -->
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="images/bkGroup.png" alt="PT. Bravo Komando Group" width="40" height="40" />
+        <div>
+          <p class="footer-logo-title">PT. BRAVO KOMANDO</p>
+          <p class="footer-logo-sub">GROUP</p>
+        </div>
+      </div>
+      <p>Terpercaya, Profesional, Handal dan Berintegritas untuk menjadi partner perusahaan Anda.</p>
+    </div>
+    <div class="footer-nav">
+      <h4>Navigasi</h4>
+      <ul>
+        <li><a href="index.html#beranda">Beranda</a></li>
+        <li><a href="index.html#tentang">Tentang Kami</a></li>
+        <li><a href="index.html#layanan">Layanan</a></li>
+        <li><a href="index.html#nilai">Nilai Perusahaan</a></li>
+        <li><a href="index.html#visi-misi">Visi &amp; Misi</a></li>
+        <li><a href="index.html#tim">Tim Kami</a></li>
+        <li><a href="karir.html">Karir</a></li>
+        <li><a href="index.html#kontak">Kontak</a></li>
+      </ul>
+    </div>
+    <div class="footer-kontak">
+      <h4>Kontak</h4>
+      <ul>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Jl. Ir. H. Juanda Ruko 88.H Panembong RT.002 RW.002, Desa Limbangansari, Kec./Kab. Cianjur, Jawa Barat 43211</span>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.49 16.92z"/></svg>
+          <a href="tel:+6208535351717">0853 5351 7176</a>
+        </li>
+        <li>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:ptbravokomandogrup@gmail.com">ptbravokomandogrup@gmail.com</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span id="tahun"></span> PT. Bravo Komando Group. All rights reserved.</p>
+    <a href="admin/login.html">Admin Panel</a>
+  </div>
+</footer>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+/* ─── KARIR DETAIL PAGE LOGIC ─── */
+let currentLowongan = null
+
+function show(id)  { document.getElementById(id)?.classList.remove('hidden') }
+function hide(id)  { document.getElementById(id)?.classList.add('hidden') }
+
+async function initDetailPage() {
+  document.getElementById('tahun').textContent = new Date().getFullYear()
+
+  const params = new URLSearchParams(window.location.search)
+  const id = params.get('id')
+
+  if (!id) { hide('pageLoading'); show('pageNotFound'); return }
+
+  const { data, error } = await sb.from('lowongan').select('*').eq('id', id).single()
+
+  hide('pageLoading')
+
+  if (error || !data) { show('pageNotFound'); return }
+  if (data.status !== 'aktif') { show('pageNotFound'); return }
+
+  currentLowongan = data
+  renderDetail(data)
+  show('pageContent')
+}
+
+function renderDetail(item) {
+  // Update page title
+  document.title = `${item.posisi} — PT. Bravo Komando Group`
+
+  // Tags
+  const tags = document.getElementById('detailTags')
+  tags.innerHTML = `
+    <span class="detail-header-tags span tag-tipe">${item.tipe || 'Full Time'}</span>
+    ${item.departemen ? `<span class="detail-header-tags span tag-dept">${item.departemen}</span>` : ''}
+  `
+
+  // Judul
+  document.getElementById('detailJudul').textContent = item.posisi
+
+  // Meta
+  const meta = []
+  if (item.lokasi) meta.push(`
+    <span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      ${item.lokasi}
+    </span>`)
+  if (item.deadline) meta.push(`
+    <span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Deadline: ${formatTanggal(item.deadline)}
+    </span>`)
+  document.getElementById('detailMeta').innerHTML = meta.join('')
+
+  // Deskripsi
+  if (item.deskripsi) {
+    document.getElementById('detailDeskripsi').textContent = item.deskripsi
+    document.getElementById('cardDeskripsi').style.display = 'block'
+  }
+
+  // Kualifikasi
+  if (item.kualifikasi) {
+    document.getElementById('detailKualifikasi').textContent = item.kualifikasi
+    document.getElementById('cardKualifikasi').style.display = 'block'
+  }
+}
+
+function handleFileChange(input) {
+  const label = document.getElementById('uploadText')
+  if (input.files[0]) {
+    label.textContent = input.files[0].name
+  } else {
+    label.textContent = 'Klik untuk upload file CV'
+  }
+}
+
+async function submitLamaran(e) {
+  e.preventDefault()
+  const btn = document.getElementById('btnLamar')
+  const errEl = document.getElementById('formErrorDetail')
+  btn.disabled = true
+  btn.textContent = 'Mengirim...'
+  errEl.classList.add('hidden')
+
+  try {
+    let cv_url = null
+    const cvFile = document.getElementById('lCvFile')?.files[0]
+
+    if (cvFile) {
+      const fileName = `${Date.now()}_${cvFile.name.replace(/\s+/g, '_')}`
+      const { error: uploadErr } = await sb.storage.from('cv-pelamar').upload(fileName, cvFile)
+      if (uploadErr) throw uploadErr
+      const { data: urlData } = sb.storage.from('cv-pelamar').getPublicUrl(fileName)
+      cv_url = urlData.publicUrl
+    }
+
+    const { error: insertErr } = await sb.from('lamaran').insert({
+      lowongan_id: currentLowongan.id,
+      nama:        document.getElementById('lNama').value,
+      email:       document.getElementById('lEmail').value,
+      telepon:     document.getElementById('lTelepon').value,
+      pesan:       document.getElementById('lPesan').value,
+      cv_url,
+      status:      'baru',
+    })
+    if (insertErr) throw insertErr
+
+    // Show success
+    document.getElementById('successPosisi').textContent = currentLowongan.posisi
+    hide('lamaranForm')
+    show('formSuccessInline')
+
+  } catch (err) {
+    errEl.textContent = 'Terjadi kesalahan. Silakan coba lagi.'
+    errEl.classList.remove('hidden')
+    btn.disabled = false
+    btn.textContent = 'Kirim Lamaran'
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initDetailPage)
+</script>
+</body>
+</html>

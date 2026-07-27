@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lihat Lamaran — Admin Bravo Komando</title>
+  <link rel="icon" href="../images/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+<div class="admin-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../images/bkGroup.png" alt="BK Group" width="36" height="36" />
+      <div><p class="sidebar-logo-title">BRAVO KOMANDO</p><p class="sidebar-logo-sub">Admin Panel</p></div>
+    </div>
+    <div id="sidebar"></div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-header">
+      <h1>Lihat Lamaran</h1>
+      <div class="admin-header-right" id="adminHeaderRight"></div>
+    </header>
+    <div class="page-body">
+
+      <!-- Filter tabs -->
+      <div class="filter-tabs" id="filterTabs">
+        <button class="filter-tab active" data-status="semua" onclick="setFilter('semua',this)">Semua</button>
+        <button class="filter-tab" data-status="baru"     onclick="setFilter('baru',this)">Baru</button>
+        <button class="filter-tab" data-status="diproses" onclick="setFilter('diproses',this)">Diproses</button>
+        <button class="filter-tab" data-status="diterima" onclick="setFilter('diterima',this)">Diterima</button>
+        <button class="filter-tab" data-status="ditolak"  onclick="setFilter('ditolak',this)">Ditolak</button>
+      </div>
+
+      <div class="card" id="tableWrap">
+        <div class="loading-center"><div class="spinner-lg spinner"></div></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay hidden" id="detailModal" onclick="if(event.target.id==='detailModal') closeModal('detailModal')">
+  <div class="modal" id="detailBox">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:.75rem;">
+        <div id="detailAvatar" style="width:2.75rem;height:2.75rem;border-radius:50%;background:rgba(14,165,233,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span id="detailInitial" style="color:#0ea5e9;font-weight:800;"></span>
+        </div>
+        <div>
+          <h2 id="detailNama" style="font-size:1rem;"></h2>
+          <p id="detailPosisi" style="color:var(--light);font-size:.8rem;margin-top:.1rem;font-weight:400;"></p>
+        </div>
+      </div>
+      <button class="btn-icon" onclick="closeModal('detailModal')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+        <a id="detailEmail" href="#" class="detail-info-card">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div><p class="detail-info-label">Email</p><p id="detailEmailText" style="font-size:.8rem;font-weight:600;color:var(--text);"></p></div>
+        </a>
+        <a id="detailTeleponLink" href="#" class="detail-info-card">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.9a16 16 0 0 0 6 6l.9-.9a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.49 16.92z"/></svg>
+          <div><p class="detail-info-label">Telepon</p><p id="detailTeleponText" style="font-size:.8rem;font-weight:600;color:var(--text);"></p></div>
+        </a>
+      </div>
+
+      <div id="detailPesanWrap" class="hidden">
+        <p style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Cover Letter</p>
+        <p id="detailPesan" style="background:#f8fafc;border-radius:.75rem;padding:1rem;font-size:.85rem;color:#475569;line-height:1.7;"></p>
+      </div>
+
+      <a id="detailCvLink" href="#" target="_blank" class="hidden" style="display:flex;align-items:center;gap:.5rem;background:rgba(14,165,233,.08);color:#0ea5e9;padding:.875rem 1rem;border-radius:.75rem;font-size:.875rem;font-weight:700;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Unduh CV
+      </a>
+
+      <div>
+        <p style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.6rem;">Update Status</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;" id="detailStatusBtns"></div>
+      </div>
+
+      <p id="detailTanggal" style="color:var(--light);font-size:.75rem;padding-top:.5rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.35rem;"></p>
+    </div>
+  </div>
+</div>
+
+<style>
+.detail-info-card {
+  display:flex;align-items:center;gap:.625rem;
+  background:#f8fafc;border-radius:.75rem;padding:.75rem;
+}
+.detail-info-label { color:var(--light);font-size:.7rem;margin-bottom:.1rem; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="admin.js"></script>
+<script>
+let currentFilter = 'semua'
+let selectedItem  = null
+
+function setFilter(status, btn) {
+  currentFilter = status
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  fetchLamaran()
+}
+
+async function fetchLamaran() {
+  document.getElementById('tableWrap').innerHTML = '<div class="loading-center"><div class="spinner-lg spinner"></div></div>'
+  let q = sb.from('lamaran').select('*, lowongan(posisi)').order('created_at', { ascending: false })
+  if (currentFilter !== 'semua') q = q.eq('status', currentFilter)
+  const { data } = await q
+  renderTable(data || [])
+}
+
+function renderTable(rows) {
+  if (rows.length === 0) {
+    document.getElementById('tableWrap').innerHTML = `
+      <div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <p>Tidak ada lamaran untuk filter ini.</p>
+      </div>`
+    return
+  }
+
+  document.getElementById('tableWrap').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Pelamar</th>
+          <th class="td-hide-sm">Posisi</th>
+          <th class="td-hide-md">Tanggal</th>
+          <th>Status</th>
+          <th style="text-align:right">Update</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(row => {
+            const s = STATUS_LAMARAN[row.status] || { label: row.status, cls: 'badge-gray' }
+            const opts = ['baru','diproses','diterima','ditolak'].map(v =>
+              `<option value="${v}" ${row.status===v?'selected':''}>${v}</option>`
+            ).join('')
+            return `
+              <tr style="cursor:pointer;" onclick='openDetail(${JSON.stringify(row)})'>
+                <td>
+                  <div style="display:flex;align-items:center;gap:.75rem;">
+                    <div style="width:2rem;height:2rem;border-radius:50%;background:rgba(14,165,233,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                      <span style="color:#0ea5e9;font-size:.7rem;font-weight:800;">${esc((row.nama||'P')[0].toUpperCase())}</span>
+                    </div>
+                    <div>
+                      <p style="font-weight:700;font-size:.875rem;color:var(--text);">${esc(row.nama)}</p>
+                      <p style="font-size:.75rem;color:var(--light);">${esc(row.email)}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="td-hide-sm" style="color:var(--muted);font-size:.875rem;">${esc(row.lowongan?.posisi || '-')}</td>
+                <td class="td-hide-md" style="color:var(--muted);font-size:.8rem;">${formatTanggal(row.created_at)}</td>
+                <td><span class="badge ${s.cls}">${s.label}</span></td>
+                <td style="text-align:right;" onclick="event.stopPropagation()">
+                  <select onchange="updateStatus('${row.id}',this.value)"
+                    style="font-size:.75rem;border:1px solid var(--border);border-radius:.5rem;padding:.3rem .5rem;background:#fff;color:var(--text);cursor:pointer;outline:none;">
+                    ${opts}
+                  </select>
+                </td>
+              </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`
+}
+
+async function updateStatus(id, status) {
+  await sb.from('lamaran').update({ status }).eq('id', id)
+  if (selectedItem?.id === id) {
+    selectedItem.status = status
+    renderDetailStatusBtns(id, status)
+  }
+  showToast('Status diperbarui')
+  fetchLamaran()
+}
+
+function openDetail(row) {
+  selectedItem = row
+  document.getElementById('detailInitial').textContent = (row.nama||'P')[0].toUpperCase()
+  document.getElementById('detailNama').textContent    = row.nama || '-'
+  document.getElementById('detailPosisi').textContent  = row.lowongan?.posisi || 'Posisi tidak tersedia'
+
+  const emailEl = document.getElementById('detailEmail')
+  emailEl.href  = `mailto:${row.email}`
+  document.getElementById('detailEmailText').textContent = row.email || '-'
+
+  const telEl = document.getElementById('detailTeleponLink')
+  telEl.href  = `tel:${row.telepon}`
+  document.getElementById('detailTeleponText').textContent = row.telepon || '-'
+
+  if (row.pesan) {
+    document.getElementById('detailPesan').textContent = row.pesan
+    document.getElementById('detailPesanWrap').classList.remove('hidden')
+  } else {
+    document.getElementById('detailPesanWrap').classList.add('hidden')
+  }
+
+  const cvLink = document.getElementById('detailCvLink')
+  if (row.cv_url) {
+    cvLink.href = row.cv_url
+    cvLink.classList.remove('hidden')
+    cvLink.style.display = 'flex'
+  } else {
+    cvLink.classList.add('hidden')
+  }
+
+  renderDetailStatusBtns(row.id, row.status)
+
+  document.getElementById('detailTanggal').innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Diterima: ${formatTanggal(row.created_at)}`
+
+  openModal('detailModal')
+}
+
+function renderDetailStatusBtns(id, current) {
+  const wrap = document.getElementById('detailStatusBtns')
+  const statusList = ['baru','diproses','diterima','ditolak']
+  wrap.innerHTML = statusList.map(s => {
+    const info = STATUS_LAMARAN[s]
+    const isActive = s === current
+    return `<button onclick="updateStatus('${id}','${s}')"
+      class="badge ${info.cls}" style="cursor:pointer;border:none;padding:.35rem .875rem;
+      ${isActive ? 'outline:2px solid #94a3b8;outline-offset:2px;' : 'opacity:.55;'}">
+      ${info.label}
+    </button>`
+  }).join('')
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth()
+  if (!session) return
+  initSidebar('lamaran.html')
+  initAdminHeader()
+  fetchLamaran()
+})
+</script>
+</body>
+</html>
