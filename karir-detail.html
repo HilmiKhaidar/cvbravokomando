@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detail Lowongan — PT. Bravo Komando Group</title>
   <meta name="description" content="Detail lowongan dan form lamaran PT. Bravo Komando Group." />
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="PT. Bravo Komando Group" />
+  <meta property="og:title"       content="Lowongan Karir — PT. Bravo Komando Group" />
+  <meta property="og:description" content="Lamar posisi karir di PT. Bravo Komando Group, perusahaan outsourcing & alih daya SDM terpercaya." />
+  <meta property="og:image"       content="https://cvbravokomando.vercel.app/images/bkGroup.png" />
+  <meta property="og:url"         content="https://cvbravokomando.vercel.app/karir-detail.html" />
+  <meta name="twitter:card"       content="summary_large_image" />
   <link rel="icon" href="images/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -134,12 +142,13 @@
               <input type="tel" id="lTelepon" placeholder="08xx xxxx xxxx" required />
             </div>
             <div class="form-group">
-              <label>Upload CV (PDF/DOC)</label>
+              <label>Upload CV (PDF/DOC, maks. 5 MB)</label>
               <label class="upload-label" id="uploadLabel">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
                 <span id="uploadText">Klik untuk upload file CV</span>
                 <input type="file" id="lCvFile" accept=".pdf,.doc,.docx" onchange="handleFileChange(this)" />
               </label>
+              <span id="cvFileError" class="hidden" style="color:#ef4444;font-size:.75rem;margin-top:.25rem;display:block;"></span>
             </div>
             <div class="form-group">
               <label>Cover Letter</label>
@@ -200,7 +209,6 @@
   </div>
   <div class="footer-bottom">
     <p>© <span id="tahun"></span> PT. Bravo Komando Group. All rights reserved.</p>
-    <a href="admin/login.html">Admin Panel</a>
   </div>
 </footer>
 
@@ -212,6 +220,10 @@
 <script src="app.js"></script>
 <script>
 /* ─── KARIR DETAIL PAGE LOGIC ─── */
+const CV_MAX_SIZE_MB = 5
+const CV_ALLOWED_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+const CV_ALLOWED_EXT   = /\.(pdf|doc|docx)$/i
+
 let currentLowongan = null
 
 function show(id)  { document.getElementById(id)?.classList.remove('hidden') }
@@ -238,20 +250,16 @@ async function initDetailPage() {
 }
 
 function renderDetail(item) {
-  // Update page title
   document.title = `${item.posisi} — PT. Bravo Komando Group`
 
-  // Tags
   const tags = document.getElementById('detailTags')
   tags.innerHTML = `
     <span class="detail-header-tags span tag-tipe">${item.tipe || 'Full Time'}</span>
     ${item.departemen ? `<span class="detail-header-tags span tag-dept">${item.departemen}</span>` : ''}
   `
 
-  // Judul
   document.getElementById('detailJudul').textContent = item.posisi
 
-  // Meta
   const meta = []
   if (item.lokasi) meta.push(`
     <span>
@@ -265,13 +273,10 @@ function renderDetail(item) {
     </span>`)
   document.getElementById('detailMeta').innerHTML = meta.join('')
 
-  // Deskripsi
   if (item.deskripsi) {
     document.getElementById('detailDeskripsi').textContent = item.deskripsi
     document.getElementById('cardDeskripsi').style.display = 'block'
   }
-
-  // Kualifikasi
   if (item.kualifikasi) {
     document.getElementById('detailKualifikasi').textContent = item.kualifikasi
     document.getElementById('cardKualifikasi').style.display = 'block'
@@ -279,18 +284,57 @@ function renderDetail(item) {
 }
 
 function handleFileChange(input) {
-  const label = document.getElementById('uploadText')
-  if (input.files[0]) {
-    label.textContent = input.files[0].name
-  } else {
+  const label   = document.getElementById('uploadText')
+  const errEl   = document.getElementById('cvFileError')
+  const file    = input.files[0]
+
+  // Reset error
+  errEl.textContent = ''
+  errEl.classList.add('hidden')
+  input.style.outline = ''
+
+  if (!file) { label.textContent = 'Klik untuk upload file CV'; return }
+
+  // Validasi ekstensi & tipe
+  if (!CV_ALLOWED_EXT.test(file.name) || !CV_ALLOWED_TYPES.includes(file.type)) {
+    errEl.textContent = 'Hanya file PDF, DOC, atau DOCX yang diizinkan.'
+    errEl.classList.remove('hidden')
+    input.value = ''
     label.textContent = 'Klik untuk upload file CV'
+    return
   }
+
+  // Validasi ukuran (max 5 MB)
+  if (file.size > CV_MAX_SIZE_MB * 1024 * 1024) {
+    errEl.textContent = `Ukuran file maksimal ${CV_MAX_SIZE_MB} MB.`
+    errEl.classList.remove('hidden')
+    input.value = ''
+    label.textContent = 'Klik untuk upload file CV'
+    return
+  }
+
+  label.textContent = file.name
 }
 
 async function submitLamaran(e) {
   e.preventDefault()
-  const btn = document.getElementById('btnLamar')
+  const btn   = document.getElementById('btnLamar')
   const errEl = document.getElementById('formErrorDetail')
+
+  // Validasi
+  const nama    = document.getElementById('lNama').value.trim()
+  const email   = document.getElementById('lEmail').value.trim()
+  const telepon = document.getElementById('lTelepon').value.trim()
+  let valid = true
+
+  if (!nama)   { showLamaranFieldError('lNama', 'Nama wajib diisi'); valid = false }
+  if (!email)  { showLamaranFieldError('lEmail', 'Email wajib diisi'); valid = false }
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showLamaranFieldError('lEmail', 'Format email tidak valid'); valid = false }
+  if (!telepon) { showLamaranFieldError('lTelepon', 'Telepon wajib diisi'); valid = false }
+  else if (!/^[\d\s\+\-\(\)]{8,20}$/.test(telepon)) { showLamaranFieldError('lTelepon', 'Format telepon tidak valid'); valid = false }
+
+  if (!valid) return
+
   btn.disabled = true
   btn.textContent = 'Mengirim...'
   errEl.classList.add('hidden')
@@ -309,16 +353,13 @@ async function submitLamaran(e) {
 
     const { error: insertErr } = await sb.from('lamaran').insert({
       lowongan_id: currentLowongan.id,
-      nama:        document.getElementById('lNama').value,
-      email:       document.getElementById('lEmail').value,
-      telepon:     document.getElementById('lTelepon').value,
-      pesan:       document.getElementById('lPesan').value,
+      nama, email, telepon,
+      pesan:  document.getElementById('lPesan').value,
       cv_url,
-      status:      'baru',
+      status: 'baru',
     })
     if (insertErr) throw insertErr
 
-    // Show success
     document.getElementById('successPosisi').textContent = currentLowongan.posisi
     hide('lamaranForm')
     show('formSuccessInline')
@@ -329,6 +370,25 @@ async function submitLamaran(e) {
     btn.disabled = false
     btn.textContent = 'Kirim Lamaran'
   }
+}
+
+function showLamaranFieldError(fieldId, msg) {
+  const el = document.getElementById(fieldId)
+  if (!el) return
+  el.style.borderColor = '#ef4444'
+  let span = el.parentElement.querySelector('.field-err')
+  if (!span) {
+    span = document.createElement('span')
+    span.className = 'field-err'
+    span.style.cssText = 'color:#ef4444;font-size:.75rem;margin-top:.25rem;display:block;'
+    el.parentElement.appendChild(span)
+  }
+  span.textContent = msg
+  // Auto-clear on input
+  el.addEventListener('input', () => {
+    el.style.borderColor = ''
+    span.remove()
+  }, { once: true })
 }
 
 document.addEventListener('DOMContentLoaded', initDetailPage)

@@ -26,19 +26,8 @@
     <div class="page-body">
       <!-- Top bar -->
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.5rem;">
-        <div class="konten-tabs">
-          <button class="konten-tab active" onclick="switchTab('hero',this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            Hero
-          </button>
-          <button class="konten-tab" onclick="switchTab('tentang',this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-            Tentang Kami
-          </button>
-          <button class="konten-tab" onclick="switchTab('visimisi',this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
-            Visi &amp; Misi
-          </button>
+        <div class="konten-tabs" id="kontenTabs">
+          <!-- diisi oleh JS -->
         </div>
         <button class="btn btn-primary" id="saveBtn" onclick="handleSave()" disabled>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -49,88 +38,11 @@
       <!-- Loading -->
       <div id="kontenLoading" class="loading-center"><div class="spinner-lg spinner"></div></div>
 
-      <!-- HERO TAB -->
-      <div id="tabHero" class="tab-panel hidden">
-        <div class="card card-p" style="margin-bottom:1rem;">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Teks Utama</h3>
-          <div style="display:flex;flex-direction:column;gap:1rem;">
-            <div class="form-group">
-              <label class="form-label">Badge (teks kecil di atas)</label>
-              <input type="text" id="k_hero_badge" class="form-input" oninput="markDirty()" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tagline Utama</label>
-              <textarea id="k_hero_tagline" class="form-textarea" rows="2" oninput="markDirty()"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Sub Teks</label>
-              <textarea id="k_hero_subteks" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="card card-p">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">4 Statistik</h3>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-            ${[1,2,3,4].map(n => `
-              <div class="card card-p">
-                <p style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;">Stat ${n}</p>
-                <div class="form-group" style="margin-bottom:.75rem;">
-                  <label class="form-label">Nilai</label>
-                  <input type="text" id="k_hero_stat${n}_nilai" class="form-input" placeholder="contoh: 2017" oninput="markDirty()" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Label</label>
-                  <input type="text" id="k_hero_stat${n}_label" class="form-input" placeholder="contoh: Tahun Berdiri" oninput="markDirty()" />
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
+      <!-- Tab panels — diisi oleh JS -->
+      <div id="tabHero"    class="tab-panel hidden"></div>
+      <div id="tabTentang" class="tab-panel hidden"></div>
+      <div id="tabVisimisi" class="tab-panel hidden"></div>
 
-      <!-- TENTANG TAB -->
-      <div id="tabTentang" class="tab-panel hidden">
-        <div class="card card-p">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Teks Tentang Kami</h3>
-          <div style="display:flex;flex-direction:column;gap:1rem;">
-            ${[1,2,3,4].map(n => `
-              <div class="form-group">
-                <label class="form-label">Paragraf ${n}</label>
-                <textarea id="k_tentang_par${n}" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
-
-      <!-- VISI MISI TAB -->
-      <div id="tabVisimisi" class="tab-panel hidden">
-        <div class="card card-p" style="margin-bottom:1rem;">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Visi</h3>
-          <div class="form-group">
-            <label class="form-label">Teks Visi</label>
-            <textarea id="k_visi_teks" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
-          </div>
-        </div>
-        <div class="card card-p" style="margin-bottom:1rem;">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Misi (4 poin)</h3>
-          <div style="display:flex;flex-direction:column;gap:.75rem;">
-            ${[1,2,3,4].map(n => `
-              <div class="form-group">
-                <label class="form-label">Misi ${n}</label>
-                <input type="text" id="k_misi${n}" class="form-input" oninput="markDirty()" />
-              </div>`).join('')}
-          </div>
-        </div>
-        <div class="card card-p">
-          <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Kebijakan Mutu (6 poin)</h3>
-          <div style="display:flex;flex-direction:column;gap:.75rem;">
-            ${[1,2,3,4,5,6].map(n => `
-              <div class="form-group">
-                <label class="form-label">Kebijakan Mutu ${n}</label>
-                <textarea id="k_mutu${n}" class="form-textarea" rows="2" oninput="markDirty()"></textarea>
-              </div>`).join('')}
-          </div>
-        </div>
-      </div>
     </div><!-- /page-body -->
   </div>
 </div>
@@ -144,19 +56,119 @@ let activeTab = 'hero'
 
 const ALL_KEYS = [
   'hero_badge','hero_tagline','hero_subteks',
-  ...([1,2,3,4].flatMap(n => [`hero_stat${n}_nilai`,`hero_stat${n}_label`])),
+  ...[1,2,3,4].flatMap(n => [`hero_stat${n}_nilai`,`hero_stat${n}_label`]),
   ...[1,2,3,4].map(n => `tentang_par${n}`),
   'visi_teks',
   ...[1,2,3,4].map(n => `misi${n}`),
   ...[1,2,3,4,5,6].map(n => `mutu${n}`),
 ]
 
+/* ── Render tabs nav ── */
+function renderTabs() {
+  const tabs = [
+    { id: 'hero',     label: 'Hero',          icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>' },
+    { id: 'tentang',  label: 'Tentang Kami',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>' },
+    { id: 'visimisi', label: 'Visi &amp; Misi', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>' },
+  ]
+  document.getElementById('kontenTabs').innerHTML = tabs.map((t, i) => `
+    <button class="konten-tab${i === 0 ? ' active' : ''}" onclick="switchTab('${t.id}', this)">
+      ${t.icon} ${t.label}
+    </button>`).join('')
+}
+
+/* ── Render panel Hero ── */
+function renderHeroPanel() {
+  const statCards = [1,2,3,4].map(n => `
+    <div class="card card-p">
+      <p style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;">Stat ${n}</p>
+      <div class="form-group" style="margin-bottom:.75rem;">
+        <label class="form-label">Nilai</label>
+        <input type="text" id="k_hero_stat${n}_nilai" class="form-input" placeholder="contoh: 2017" oninput="markDirty()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Label</label>
+        <input type="text" id="k_hero_stat${n}_label" class="form-input" placeholder="contoh: Tahun Berdiri" oninput="markDirty()" />
+      </div>
+    </div>`).join('')
+
+  document.getElementById('tabHero').innerHTML = `
+    <div class="card card-p" style="margin-bottom:1rem;">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Teks Utama</h3>
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label">Badge (teks kecil di atas)</label>
+          <input type="text" id="k_hero_badge" class="form-input" oninput="markDirty()" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tagline Utama</label>
+          <textarea id="k_hero_tagline" class="form-textarea" rows="2" oninput="markDirty()"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sub Teks</label>
+          <textarea id="k_hero_subteks" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="card card-p">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">4 Statistik</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">${statCards}</div>
+    </div>`
+}
+
+/* ── Render panel Tentang ── */
+function renderTentangPanel() {
+  const parFields = [1,2,3,4].map(n => `
+    <div class="form-group">
+      <label class="form-label">Paragraf ${n}</label>
+      <textarea id="k_tentang_par${n}" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
+    </div>`).join('')
+
+  document.getElementById('tabTentang').innerHTML = `
+    <div class="card card-p">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Teks Tentang Kami</h3>
+      <div style="display:flex;flex-direction:column;gap:1rem;">${parFields}</div>
+    </div>`
+}
+
+/* ── Render panel Visi Misi ── */
+function renderVisiMisiPanel() {
+  const misiFields = [1,2,3,4].map(n => `
+    <div class="form-group">
+      <label class="form-label">Misi ${n}</label>
+      <input type="text" id="k_misi${n}" class="form-input" oninput="markDirty()" />
+    </div>`).join('')
+
+  const mutuFields = [1,2,3,4,5,6].map(n => `
+    <div class="form-group">
+      <label class="form-label">Kebijakan Mutu ${n}</label>
+      <textarea id="k_mutu${n}" class="form-textarea" rows="2" oninput="markDirty()"></textarea>
+    </div>`).join('')
+
+  document.getElementById('tabVisimisi').innerHTML = `
+    <div class="card card-p" style="margin-bottom:1rem;">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Visi</h3>
+      <div class="form-group">
+        <label class="form-label">Teks Visi</label>
+        <textarea id="k_visi_teks" class="form-textarea" rows="3" oninput="markDirty()"></textarea>
+      </div>
+    </div>
+    <div class="card card-p" style="margin-bottom:1rem;">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Misi (4 poin)</h3>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">${misiFields}</div>
+    </div>
+    <div class="card card-p">
+      <h3 style="font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:1rem;">Kebijakan Mutu (6 poin)</h3>
+      <div style="display:flex;flex-direction:column;gap:.75rem;">${mutuFields}</div>
+    </div>`
+}
+
+/* ── Switch tab ── */
 function switchTab(tab, btn) {
   activeTab = tab
   document.querySelectorAll('.konten-tab').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'))
-  document.getElementById(`tab${tab.charAt(0).toUpperCase()+tab.slice(1)}`).classList.remove('hidden')
+  document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden')
 }
 
 function markDirty() {
@@ -179,7 +191,8 @@ async function loadKonten() {
 
 async function handleSave() {
   const btn = document.getElementById('saveBtn')
-  btn.disabled = true; btn.textContent = 'Menyimpan...'
+  btn.disabled = true
+  btn.textContent = 'Menyimpan...'
 
   const updates = ALL_KEYS.map(k => {
     const el = document.getElementById(`k_${k}`)
@@ -189,14 +202,13 @@ async function handleSave() {
 
   try {
     await Promise.all(updates)
-    // refresh original
     ALL_KEYS.forEach(k => {
       const el = document.getElementById(`k_${k}`)
       if (el) originalData[k] = el.value
     })
     dirty = false
     showToast('Konten berhasil disimpan!')
-  } catch(err) {
+  } catch (err) {
     showToast('Gagal menyimpan: ' + err.message, 'error')
     btn.disabled = false
   }
@@ -210,6 +222,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!session) return
   initSidebar('konten.html')
   initAdminHeader()
+
+  // Render semua panel dulu (via JS), baru load data
+  renderTabs()
+  renderHeroPanel()
+  renderTentangPanel()
+  renderVisiMisiPanel()
+
   loadKonten()
 })
 </script>

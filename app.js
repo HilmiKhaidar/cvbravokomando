@@ -316,21 +316,64 @@ function lowonganCardHTML(item) {
 }
 
 /* ═══════════════════════════════════════════
+   VALIDASI HELPERS
+═══════════════════════════════════════════ */
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+}
+
+function isValidPhone(phone) {
+  // minimal 8 digit, hanya angka/spasi/tanda +/-
+  return /^[\d\s\+\-\(\)]{8,20}$/.test(phone.trim())
+}
+
+function showFieldError(fieldId, msg) {
+  const el = document.getElementById(fieldId)
+  if (!el) return
+  el.style.borderColor = '#ef4444'
+  let errSpan = el.parentElement.querySelector('.field-err')
+  if (!errSpan) {
+    errSpan = document.createElement('span')
+    errSpan.className = 'field-err'
+    errSpan.style.cssText = 'color:#ef4444;font-size:.75rem;margin-top:.25rem;display:block;'
+    el.parentElement.appendChild(errSpan)
+  }
+  errSpan.textContent = msg
+}
+
+function clearFieldErrors(formId) {
+  const form = document.getElementById(formId)
+  if (!form) return
+  form.querySelectorAll('.field-err').forEach(el => el.remove())
+  form.querySelectorAll('input, textarea').forEach(el => el.style.borderColor = '')
+}
+
+/* ═══════════════════════════════════════════
    FORM KONTAK SUBMIT
 ═══════════════════════════════════════════ */
 async function submitKontak(e) {
   e.preventDefault()
+  clearFieldErrors('kontakForm')
+
+  const nama      = document.getElementById('fNama')?.value.trim()
+  const email     = document.getElementById('fEmail')?.value.trim()
+  const telepon   = document.getElementById('fTelepon')?.value.trim()
+  const perusahaan = document.getElementById('fPerusahaan')?.value.trim()
+  const pesan     = document.getElementById('fPesan')?.value.trim()
+
+  let valid = true
+  if (!nama) { showFieldError('fNama', 'Nama wajib diisi'); valid = false }
+  if (!email) { showFieldError('fEmail', 'Email wajib diisi'); valid = false }
+  else if (!isValidEmail(email)) { showFieldError('fEmail', 'Format email tidak valid'); valid = false }
+  if (telepon && !isValidPhone(telepon)) { showFieldError('fTelepon', 'Format telepon tidak valid'); valid = false }
+  if (!pesan) { showFieldError('fPesan', 'Pesan wajib diisi'); valid = false }
+  if (!valid) return
+
   const btn = document.getElementById('btnKirim')
   btn.disabled = true
   btn.textContent = 'Mengirim...'
 
-  const payload = {
-    nama:       document.getElementById('fNama')?.value,
-    perusahaan: document.getElementById('fPerusahaan')?.value,
-    email:      document.getElementById('fEmail')?.value,
-    telepon:    document.getElementById('fTelepon')?.value,
-    pesan:      document.getElementById('fPesan')?.value,
-  }
+  const payload = { nama, perusahaan, email, telepon, pesan }
 
   const { error } = await sb.from('pesan_kontak').insert(payload)
 
@@ -350,6 +393,7 @@ function resetForm() {
   document.getElementById('kontakForm')?.classList.remove('hidden')
   document.getElementById('formSuccess')?.classList.add('hidden')
   document.getElementById('formError')?.classList.add('hidden')
+  clearFieldErrors('kontakForm')
   document.getElementById('kontakForm')?.reset()
   const btn = document.getElementById('btnKirim')
   if (btn) { btn.disabled = false; btn.textContent = 'Kirim Pesan' }
