@@ -457,8 +457,8 @@ function resetFotoState() {
   const img    = document.getElementById('fotoPreviewImg')
   const initEl = document.getElementById('fotoPreviewInit')
   img.src = ''; img.style.display = 'none'
-  const ini = document.getElementById('fInisial').value || document.getElementById('fNama').value.charAt(0)
-  initEl.textContent = ini.toUpperCase() || '?'; initEl.style.display = ''
+  // Jangan override inisial jika field belum diisi — cukup tampilkan '?'
+  initEl.textContent = '?'; initEl.style.display = ''
 }
 
 function handleFileChange(input) {
@@ -503,15 +503,33 @@ function openEdit(m) {
   document.getElementById('fJabatan').value = m.jabatan || ''
   document.getElementById('fUrutan').value  = m.urutan  || 0
   document.getElementById('fAktif').checked = !!m.aktif
-  resetModal()
-  currentFotoUrl = m.foto_url || null
+
+  // Reset state foto dulu
+  croppedBlob = null; croppedDataUrl = null; rawDataUrl = null
+  document.getElementById('fotoFile').value = ''
+  document.getElementById('removePhotoBtn').classList.add('hidden')
+  document.getElementById('editCropBtn').classList.add('hidden')
+
+  const img    = document.getElementById('fotoPreviewImg')
+  const initEl = document.getElementById('fotoPreviewInit')
+
   if (m.foto_url) {
-    const img    = document.getElementById('fotoPreviewImg')
-    const initEl = document.getElementById('fotoPreviewInit')
-    img.src = m.foto_url; img.style.display = 'block'; initEl.style.display = 'none'
-    document.getElementById('removePhotoBtn').classList.remove('hidden')
+    // Ada foto existing — tampilkan
+    currentFotoUrl = m.foto_url
+    img.src = m.foto_url
+    img.style.display = 'block'
+    initEl.style.display = 'none'
     document.getElementById('uploadText').textContent = 'Ganti foto'
+    document.getElementById('removePhotoBtn').classList.remove('hidden')
+  } else {
+    // Tidak ada foto — tampilkan inisial
+    currentFotoUrl = null
+    img.src = ''; img.style.display = 'none'
+    initEl.textContent = (m.inisial || m.nama?.charAt(0) || '?').toUpperCase()
+    initEl.style.display = ''
+    document.getElementById('uploadText').textContent = 'Klik untuk upload foto'
   }
+
   openModal('modalOverlay')
 }
 
