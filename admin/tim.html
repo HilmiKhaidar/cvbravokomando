@@ -56,8 +56,48 @@
       background:linear-gradient(135deg,#0ea5e9,#1e40af);
       display:flex;align-items:center;justify-content:center;position:relative;
     }
-    .foto-preview-wrap img { width:100%;height:100%;object-fit:cover;object-position:top; }
+    .foto-preview-wrap img { width:100%;height:100%;object-fit:cover;object-position:center center; }
     .foto-preview-init { color:#fff;font-weight:900;font-size:1.25rem; }
+
+    /* ── Foto Position Adjuster ── */
+    .pos-adjuster { display:none; margin-top:.75rem; }
+    .pos-adjuster.visible { display:block; }
+    .pos-adjuster-label {
+      font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+      letter-spacing:.05em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;
+    }
+    .pos-presets {
+      display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-bottom:.6rem;
+    }
+    .pos-preset-btn {
+      padding:.3rem .4rem;font-size:.7rem;font-weight:600;border-radius:.4rem;
+      border:1.5px solid var(--border);background:#fff;cursor:pointer;
+      color:var(--muted);transition:all .15s;text-align:center;
+    }
+    .pos-preset-btn:hover { border-color:#0ea5e9;color:#0ea5e9; }
+    .pos-preset-btn.active { border-color:#0ea5e9;background:#eff6ff;color:#0ea5e9;font-weight:700; }
+
+    /* Drag area focal point */
+    .focal-wrap {
+      position:relative;width:100%;height:9rem;border-radius:.6rem;overflow:hidden;
+      border:1.5px solid var(--border);cursor:crosshair;background:#f1f5f9;
+      margin-bottom:.4rem;
+    }
+    .focal-wrap img {
+      width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;
+      transition:object-position .15s;
+    }
+    .focal-dot {
+      position:absolute;width:1.25rem;height:1.25rem;
+      background:#fff;border:2.5px solid #0ea5e9;border-radius:50%;
+      transform:translate(-50%,-50%);pointer-events:none;
+      box-shadow:0 0 0 3px rgba(14,165,233,.25);transition:left .1s,top .1s;
+    }
+    .focal-hint { font-size:.7rem;color:var(--light);text-align:center; }
+    .pos-value-display {
+      font-size:.7rem;color:var(--muted);text-align:center;
+      margin-top:.25rem;font-family:monospace;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +167,33 @@
             <p style="font-size:.75rem;color:var(--light);margin-top:.25rem;">JPG, PNG. Maks 2MB.</p>
           </div>
         </div>
+
+        <!-- ── Position Adjuster (muncul kalau ada foto) ── -->
+        <div class="pos-adjuster" id="posAdjuster">
+          <div class="pos-adjuster-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            Posisi Foto
+          </div>
+          <!-- Preset buttons -->
+          <div class="pos-presets">
+            <button type="button" class="pos-preset-btn" onclick="setPreset('left top')">↖ Kiri Atas</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('center top')">↑ Tengah Atas</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('right top')">↗ Kanan Atas</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('left center')">← Kiri</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('center center')">⊙ Tengah</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('right center')">→ Kanan</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('left bottom')">↙ Kiri Bawah</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('center bottom')">↓ Tengah Bawah</button>
+            <button type="button" class="pos-preset-btn" onclick="setPreset('right bottom')">↘ Kanan Bawah</button>
+          </div>
+          <!-- Drag focal point -->
+          <div class="focal-wrap" id="focalWrap">
+            <img id="focalImg" src="" alt="" />
+            <div class="focal-dot" id="focalDot"></div>
+          </div>
+          <p class="focal-hint">Atau klik / drag pada gambar untuk atur titik fokus</p>
+          <p class="pos-value-display" id="posValueDisplay">center center</p>
+        </div>
       </div>
 
       <div class="form-grid">
@@ -179,11 +246,14 @@ const GRADIENTS = [
   'linear-gradient(135deg,#dc2626,#1e293b)',
 ]
 
-let editId = null
+let editId        = null
 let currentFotoUrl = null
-let newFotoFile = null
+let newFotoFile    = null
+let currentPosition = 'center center'
 
-/* ── fetch & render ── */
+/* ═══════════════════════════════
+   FETCH & RENDER
+═══════════════════════════════ */
 async function fetchTim() {
   const { data } = await sb.from('tim').select('*').order('urutan', { ascending: true })
   renderGrid(data || [])
@@ -200,10 +270,11 @@ function renderGrid(rows) {
     return
   }
   document.getElementById('timGrid').innerHTML = rows.map((m, i) => {
-    const grad = GRADIENTS[i % GRADIENTS.length]
+    const grad    = GRADIENTS[i % GRADIENTS.length]
     const initial = (m.inisial || m.nama?.charAt(0) || '?').toUpperCase()
+    const pos     = m.foto_position || 'center center'
     const photoHtml = m.foto_url
-      ? `<img src="${esc(m.foto_url)}" alt="${esc(m.nama)}" />`
+      ? `<img src="${esc(m.foto_url)}" alt="${esc(m.nama)}" style="object-position:${esc(pos)}" />`
       : `<span style="color:#fff;font-weight:900;font-size:1.75rem;">${esc(initial)}</span>`
     const aktifCls = m.aktif ? 'background:#dcfce7;color:#15803d;' : 'background:#f1f5f9;color:#64748b;'
     return `
@@ -230,7 +301,85 @@ function renderGrid(rows) {
   }).join('')
 }
 
-/* ── modal helpers ── */
+/* ═══════════════════════════════
+   POSITION ADJUSTER
+═══════════════════════════════ */
+function showAdjuster(src) {
+  const adj   = document.getElementById('posAdjuster')
+  const fImg  = document.getElementById('focalImg')
+  const pImg  = document.getElementById('fotoPreviewImg')
+  adj.classList.add('visible')
+  fImg.src = src
+  // sync dot & preview position
+  applyPosition(currentPosition)
+}
+
+function hideAdjuster() {
+  document.getElementById('posAdjuster').classList.remove('visible')
+}
+
+function setPreset(pos) {
+  currentPosition = pos
+  applyPosition(pos)
+}
+
+function applyPosition(pos) {
+  currentPosition = pos
+
+  // Update focal image object-position
+  const fImg = document.getElementById('focalImg')
+  fImg.style.objectPosition = pos
+
+  // Update preview thumbnail
+  const pImg = document.getElementById('fotoPreviewImg')
+  if (pImg) pImg.style.objectPosition = pos
+
+  // Update dot position
+  const parts  = pos.split(' ')
+  const xWord  = parts[0]
+  const yWord  = parts[1] || 'center'
+  const xMap   = { left: 10, center: 50, right: 90 }
+  const yMap   = { top: 10, center: 50, bottom: 90 }
+  const xPct   = xMap[xWord]  ?? parseFloat(xWord)  ?? 50
+  const yPct   = yMap[yWord]  ?? parseFloat(yWord)  ?? 50
+  const dot    = document.getElementById('focalDot')
+  dot.style.left = `${xPct}%`
+  dot.style.top  = `${yPct}%`
+
+  // Update text display
+  document.getElementById('posValueDisplay').textContent = pos
+
+  // Highlight active preset
+  document.querySelectorAll('.pos-preset-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick') === `setPreset('${pos}')`)
+  })
+}
+
+// Setup drag on focal area
+function initFocalDrag() {
+  const wrap = document.getElementById('focalWrap')
+  let dragging = false
+
+  function onMove(e) {
+    const rect = wrap.getBoundingClientRect()
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY
+    const xPct = Math.round(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width)  * 100)))
+    const yPct = Math.round(Math.max(0, Math.min(100, ((clientY - rect.top)  / rect.height) * 100)))
+    applyPosition(`${xPct}% ${yPct}%`)
+  }
+
+  wrap.addEventListener('mousedown',  e => { dragging = true; onMove(e) })
+  wrap.addEventListener('touchstart', e => { dragging = true; onMove(e) }, { passive: true })
+  wrap.addEventListener('mousemove',  e => { if (dragging) onMove(e) })
+  wrap.addEventListener('touchmove',  e => { if (dragging) onMove(e) }, { passive: true })
+  window.addEventListener('mouseup',  () => dragging = false)
+  window.addEventListener('touchend', () => dragging = false)
+}
+
+/* ═══════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════ */
 function syncInitial() {
   const nm = document.getElementById('fNama').value
   if (!document.getElementById('fInisial').value) {
@@ -250,8 +399,11 @@ function handleFileChange(input) {
   const reader = new FileReader()
   reader.onload = e => {
     const img = document.getElementById('fotoPreviewImg')
-    img.src = e.target.result; img.style.display = 'block'
+    img.src = e.target.result
+    img.style.display = 'block'
+    img.style.objectPosition = currentPosition
     document.getElementById('fotoPreviewInit').style.display = 'none'
+    showAdjuster(e.target.result)
   }
   reader.readAsDataURL(file)
 }
@@ -261,21 +413,21 @@ function removePhoto() {
   document.getElementById('fotoFile').value = ''
   document.getElementById('uploadText').textContent = 'Klik untuk upload foto'
   document.getElementById('removePhotoBtn').classList.add('hidden')
-  const img = document.getElementById('fotoPreviewImg')
-  img.src = ''; img.style.display = 'none'
-  // restore init
-  const ini = document.getElementById('fInisial').value || document.getElementById('fNama').value.charAt(0)
+  const img    = document.getElementById('fotoPreviewImg')
   const initEl = document.getElementById('fotoPreviewInit')
+  img.src = ''; img.style.display = 'none'
+  const ini = document.getElementById('fInisial').value || document.getElementById('fNama').value.charAt(0)
   initEl.textContent = ini.toUpperCase() || '?'; initEl.style.display = ''
-  // restore existing foto if editing
   if (currentFotoUrl) {
-    img.src = currentFotoUrl; img.style.display = 'block'
-    initEl.style.display = 'none'
+    img.src = currentFotoUrl; img.style.display = 'block'; initEl.style.display = 'none'
+    showAdjuster(currentFotoUrl)
+  } else {
+    hideAdjuster()
   }
 }
 
 function resetModal() {
-  newFotoFile = null; currentFotoUrl = null
+  newFotoFile = null; currentFotoUrl = null; currentPosition = 'center center'
   document.getElementById('fotoFile').value = ''
   document.getElementById('uploadText').textContent = 'Klik untuk upload foto'
   document.getElementById('removePhotoBtn').classList.add('hidden')
@@ -283,6 +435,7 @@ function resetModal() {
   img.src = ''; img.style.display = 'none'
   const initEl = document.getElementById('fotoPreviewInit')
   initEl.textContent = '?'; initEl.style.display = ''
+  hideAdjuster()
 }
 
 function openAdd() {
@@ -299,18 +452,22 @@ function openAdd() {
 
 function openEdit(m) {
   editId = m.id; currentFotoUrl = m.foto_url || null
+  currentPosition = m.foto_position || 'center center'
   document.getElementById('modalTitle').textContent = 'Edit Anggota'
-  document.getElementById('fNama').value    = m.nama || ''
+  document.getElementById('fNama').value    = m.nama    || ''
   document.getElementById('fInisial').value = m.inisial || ''
   document.getElementById('fJabatan').value = m.jabatan || ''
-  document.getElementById('fUrutan').value  = m.urutan || 0
+  document.getElementById('fUrutan').value  = m.urutan  || 0
   document.getElementById('fAktif').checked = !!m.aktif
   resetModal()
-  // show existing foto
+  currentPosition = m.foto_position || 'center center'
   if (m.foto_url) {
     const img = document.getElementById('fotoPreviewImg')
-    img.src = m.foto_url; img.style.display = 'block'
+    img.src = m.foto_url
+    img.style.display = 'block'
+    img.style.objectPosition = currentPosition
     document.getElementById('fotoPreviewInit').style.display = 'none'
+    showAdjuster(m.foto_url)
   } else {
     const ini = m.inisial || m.nama?.charAt(0) || '?'
     document.getElementById('fotoPreviewInit').textContent = ini.toUpperCase()
@@ -318,7 +475,9 @@ function openEdit(m) {
   openModal('modalOverlay')
 }
 
-/* ── save ── */
+/* ═══════════════════════════════
+   SAVE
+═══════════════════════════════ */
 async function handleSave(e) {
   e.preventDefault()
   const btn = document.getElementById('saveBtn')
@@ -328,7 +487,7 @@ async function handleSave(e) {
     let foto_url = currentFotoUrl
 
     if (newFotoFile) {
-      const ext = newFotoFile.name.split('.').pop()
+      const ext      = newFotoFile.name.split('.').pop()
       const fileName = `tim_${Date.now()}.${ext}`
       const { error: upErr } = await sb.storage.from('foto-tim').upload(fileName, newFotoFile, { upsert: true })
       if (upErr) throw upErr
@@ -337,12 +496,13 @@ async function handleSave(e) {
     }
 
     const payload = {
-      nama:    document.getElementById('fNama').value,
-      inisial: document.getElementById('fInisial').value.toUpperCase(),
-      jabatan: document.getElementById('fJabatan').value,
-      urutan:  parseInt(document.getElementById('fUrutan').value) || 0,
-      aktif:   document.getElementById('fAktif').checked,
+      nama:          document.getElementById('fNama').value,
+      inisial:       document.getElementById('fInisial').value.toUpperCase(),
+      jabatan:       document.getElementById('fJabatan').value,
+      urutan:        parseInt(document.getElementById('fUrutan').value) || 0,
+      aktif:         document.getElementById('fAktif').checked,
       foto_url,
+      foto_position: foto_url ? currentPosition : null,
     }
 
     const { error } = editId
@@ -382,6 +542,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!session) return
   initSidebar('tim.html')
   initAdminHeader()
+  initFocalDrag()
   fetchTim()
 })
 </script>

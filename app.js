@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════ */
 const SUPABASE_URL = 'https://utmuwelyakuxdxokwhnl.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_2lOaSrEYxwgF3j6sktjnDQ_2oipXveR'
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const s b = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /* ═══════════════════════════════════════════
    NAVBAR — scroll effect + hamburger
@@ -243,7 +243,7 @@ async function loadTim() {
   track.innerHTML = loopData.map((m, i) => {
     const grad = GRADIENT_PALETTE[i % GRADIENT_PALETTE.length]
     const photoHtml = m.foto_url
-      ? `<img src="${m.foto_url}" alt="${m.nama}" style="width:100%;height:100%;object-fit:cover;object-position:top;" />`
+      ? `<img src="${m.foto_url}" alt="${m.nama}" style="width:100%;height:100%;object-fit:cover;object-position:${m.foto_position || 'center center'};" />`
       : `<div class="tim-avatar"><span>${(m.inisial || m.nama?.charAt(0) || 'A').toUpperCase()}</span></div>`
     return `
       <div class="tim-card">
