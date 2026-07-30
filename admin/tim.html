@@ -8,11 +8,10 @@
   <link rel="stylesheet" href="admin.css" />
   <style>
     .tim-grid {
-      display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem;
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem;
     }
-    @media(max-width:1280px){ .tim-grid{ grid-template-columns:repeat(3,1fr); } }
-    @media(max-width:900px) { .tim-grid{ grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:480px) { .tim-grid{ grid-template-columns:1fr; } }
+    @media(max-width:1100px){ .tim-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:600px) { .tim-grid{ grid-template-columns:1fr; } }
 
     .tim-card-admin {
       background:#fff; border-radius:1rem; overflow:hidden;
@@ -21,7 +20,7 @@
     }
     .tim-card-admin.inactive { opacity:.55; }
     .tim-card-photo {
-      height:14rem; position:relative; overflow:hidden;
+      height:18rem; position:relative; overflow:hidden;
       background:linear-gradient(135deg,#0ea5e9,#1e40af);
       display:flex; align-items:center; justify-content:center;
     }
@@ -52,51 +51,103 @@
 
     /* Preview foto di modal */
     .foto-preview-wrap {
-      width:5rem;height:5rem;border-radius:.75rem;overflow:hidden;flex-shrink:0;
+      width:7rem;height:7rem;border-radius:.75rem;overflow:hidden;flex-shrink:0;
       background:linear-gradient(135deg,#0ea5e9,#1e40af);
       display:flex;align-items:center;justify-content:center;position:relative;
     }
-    .foto-preview-wrap img { width:100%;height:100%;object-fit:cover;object-position:center center; }
-    .foto-preview-init { color:#fff;font-weight:900;font-size:1.25rem; }
+    .foto-preview-wrap img { width:100%;height:100%;object-fit:cover;object-position:center top; }
+    .foto-preview-init { color:#fff;font-weight:900;font-size:1.75rem; }
 
-    /* ── Foto Position Adjuster ── */
-    .pos-adjuster { display:none; margin-top:.75rem; }
+    /* ── Foto Position Adjuster — Modern ── */
+    .pos-adjuster {
+      display:none; margin-top:1rem;
+      background:#f8fafc; border:1px solid var(--border);
+      border-radius:.875rem; overflow:hidden;
+    }
     .pos-adjuster.visible { display:block; }
-    .pos-adjuster-label {
-      font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;
-      letter-spacing:.05em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;
-    }
-    .pos-presets {
-      display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-bottom:.6rem;
-    }
-    .pos-preset-btn {
-      padding:.3rem .4rem;font-size:.7rem;font-weight:600;border-radius:.4rem;
-      border:1.5px solid var(--border);background:#fff;cursor:pointer;
-      color:var(--muted);transition:all .15s;text-align:center;
-    }
-    .pos-preset-btn:hover { border-color:#0ea5e9;color:#0ea5e9; }
-    .pos-preset-btn.active { border-color:#0ea5e9;background:#eff6ff;color:#0ea5e9;font-weight:700; }
 
-    /* Drag area focal point */
+    .pos-adjuster-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.65rem 1rem; border-bottom:1px solid var(--border);
+      background:#fff;
+    }
+    .pos-adjuster-title {
+      font-size:.72rem; font-weight:700; color:var(--text);
+      text-transform:uppercase; letter-spacing:.06em;
+      display:flex; align-items:center; gap:.4rem;
+    }
+    .pos-adjuster-title svg { color:#0ea5e9; }
+    .pos-badge {
+      font-size:.65rem; font-weight:700; font-family:monospace;
+      background:#eff6ff; color:#0ea5e9; border:1px solid #bae6fd;
+      padding:.15rem .5rem; border-radius:99px; letter-spacing:.02em;
+    }
+
+    /* Focal drag area */
     .focal-wrap {
-      position:relative;width:100%;height:9rem;border-radius:.6rem;overflow:hidden;
-      border:1.5px solid var(--border);cursor:crosshair;background:#f1f5f9;
-      margin-bottom:.4rem;
+      position:relative; width:100%; height:11rem;
+      cursor:crosshair; background:#e2e8f0; overflow:hidden;
+      user-select:none;
     }
     .focal-wrap img {
-      width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;
-      transition:object-position .15s;
+      width:100%; height:100%; object-fit:cover; display:block;
+      pointer-events:none;
+    }
+    /* Crosshair overlay */
+    .focal-crosshair-h {
+      position:absolute; left:0; right:0; height:1px;
+      background:rgba(255,255,255,.4); pointer-events:none;
+      transform:translateY(-50%); transition:top .08s;
+    }
+    .focal-crosshair-v {
+      position:absolute; top:0; bottom:0; width:1px;
+      background:rgba(255,255,255,.4); pointer-events:none;
+      transform:translateX(-50%); transition:left .08s;
     }
     .focal-dot {
-      position:absolute;width:1.25rem;height:1.25rem;
-      background:#fff;border:2.5px solid #0ea5e9;border-radius:50%;
-      transform:translate(-50%,-50%);pointer-events:none;
-      box-shadow:0 0 0 3px rgba(14,165,233,.25);transition:left .1s,top .1s;
+      position:absolute; width:1.1rem; height:1.1rem;
+      background:#fff; border:2.5px solid #0ea5e9; border-radius:50%;
+      transform:translate(-50%,-50%); pointer-events:none;
+      box-shadow:0 0 0 4px rgba(14,165,233,.2), 0 2px 8px rgba(0,0,0,.25);
+      transition:left .08s, top .08s;
     }
-    .focal-hint { font-size:.7rem;color:var(--light);text-align:center; }
-    .pos-value-display {
-      font-size:.7rem;color:var(--muted);text-align:center;
-      margin-top:.25rem;font-family:monospace;
+    .focal-hint-overlay {
+      position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%);
+      background:rgba(0,0,0,.55); color:#fff; font-size:.65rem; font-weight:500;
+      padding:.2rem .6rem; border-radius:99px; pointer-events:none;
+      white-space:nowrap; backdrop-filter:blur(4px);
+    }
+
+    /* Preset grid */
+    .pos-presets-wrap {
+      padding:.6rem .75rem .75rem;
+    }
+    .pos-presets-label {
+      font-size:.65rem; font-weight:600; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.06em;
+      margin-bottom:.45rem;
+    }
+    .pos-presets {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:.3rem;
+    }
+    .pos-preset-btn {
+      display:flex; align-items:center; justify-content:center; gap:.3rem;
+      padding:.35rem .3rem; font-size:.68rem; font-weight:600;
+      border-radius:.45rem; border:1.5px solid var(--border);
+      background:#fff; cursor:pointer; color:#64748b;
+      transition:all .15s; white-space:nowrap;
+    }
+    .pos-preset-btn:hover {
+      border-color:#0ea5e9; color:#0ea5e9;
+      background:#f0f9ff;
+    }
+    .pos-preset-btn.active {
+      border-color:#0ea5e9; background:#eff6ff;
+      color:#0284c7; font-weight:700;
+      box-shadow:0 0 0 3px rgba(14,165,233,.12);
+    }
+    .pos-preset-btn .preset-arrow {
+      font-size:.75rem; line-height:1;
     }
   </style>
 </head>
@@ -170,29 +221,56 @@
 
         <!-- ── Position Adjuster (muncul kalau ada foto) ── -->
         <div class="pos-adjuster" id="posAdjuster">
-          <div class="pos-adjuster-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-            Posisi Foto
+          <div class="pos-adjuster-header">
+            <span class="pos-adjuster-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Atur Posisi Foto
+            </span>
+            <span class="pos-badge" id="posValueDisplay">center center</span>
           </div>
-          <!-- Preset buttons -->
-          <div class="pos-presets">
-            <button type="button" class="pos-preset-btn" onclick="setPreset('left top')">↖ Kiri Atas</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('center top')">↑ Tengah Atas</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('right top')">↗ Kanan Atas</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('left center')">← Kiri</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('center center')">⊙ Tengah</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('right center')">→ Kanan</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('left bottom')">↙ Kiri Bawah</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('center bottom')">↓ Tengah Bawah</button>
-            <button type="button" class="pos-preset-btn" onclick="setPreset('right bottom')">↘ Kanan Bawah</button>
-          </div>
+
           <!-- Drag focal point -->
           <div class="focal-wrap" id="focalWrap">
             <img id="focalImg" src="" alt="" />
+            <div class="focal-crosshair-h" id="crosshairH"></div>
+            <div class="focal-crosshair-v" id="crosshairV"></div>
             <div class="focal-dot" id="focalDot"></div>
+            <div class="focal-hint-overlay">Klik atau drag untuk ubah fokus</div>
           </div>
-          <p class="focal-hint">Atau klik / drag pada gambar untuk atur titik fokus</p>
-          <p class="pos-value-display" id="posValueDisplay">center center</p>
+
+          <!-- Preset buttons -->
+          <div class="pos-presets-wrap">
+            <p class="pos-presets-label">Preset cepat</p>
+            <div class="pos-presets">
+              <button type="button" class="pos-preset-btn" onclick="setPreset('left top')">
+                <span class="preset-arrow">↖</span> Kiri Atas
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('center top')">
+                <span class="preset-arrow">↑</span> Atas
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('right top')">
+                <span class="preset-arrow">↗</span> Kanan Atas
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('left center')">
+                <span class="preset-arrow">←</span> Kiri
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('center center')">
+                <span class="preset-arrow">⊙</span> Tengah
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('right center')">
+                <span class="preset-arrow">→</span> Kanan
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('left bottom')">
+                <span class="preset-arrow">↙</span> Kiri Bawah
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('center bottom')">
+                <span class="preset-arrow">↓</span> Bawah
+              </button>
+              <button type="button" class="pos-preset-btn" onclick="setPreset('right bottom')">
+                <span class="preset-arrow">↘</span> Kanan Bawah
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -334,19 +412,27 @@ function applyPosition(pos) {
   const pImg = document.getElementById('fotoPreviewImg')
   if (pImg) pImg.style.objectPosition = pos
 
-  // Update dot position
-  const parts  = pos.split(' ')
-  const xWord  = parts[0]
-  const yWord  = parts[1] || 'center'
-  const xMap   = { left: 10, center: 50, right: 90 }
-  const yMap   = { top: 10, center: 50, bottom: 90 }
-  const xPct   = xMap[xWord]  ?? parseFloat(xWord)  ?? 50
-  const yPct   = yMap[yWord]  ?? parseFloat(yWord)  ?? 50
-  const dot    = document.getElementById('focalDot')
+  // Parse x/y percentage
+  const parts = pos.split(' ')
+  const xWord = parts[0]
+  const yWord = parts[1] || 'center'
+  const xMap  = { left: 10, center: 50, right: 90 }
+  const yMap  = { top: 10, center: 50, bottom: 90 }
+  const xPct  = xMap[xWord]  ?? parseFloat(xWord)  ?? 50
+  const yPct  = yMap[yWord]  ?? parseFloat(yWord)  ?? 50
+
+  // Update dot
+  const dot = document.getElementById('focalDot')
   dot.style.left = `${xPct}%`
   dot.style.top  = `${yPct}%`
 
-  // Update text display
+  // Update crosshairs
+  const ch = document.getElementById('crosshairH')
+  const cv = document.getElementById('crosshairV')
+  if (ch) ch.style.top  = `${yPct}%`
+  if (cv) cv.style.left = `${xPct}%`
+
+  // Update badge
   document.getElementById('posValueDisplay').textContent = pos
 
   // Highlight active preset
@@ -451,15 +537,16 @@ function openAdd() {
 }
 
 function openEdit(m) {
-  editId = m.id; currentFotoUrl = m.foto_url || null
-  currentPosition = m.foto_position || 'center center'
+  editId = m.id
   document.getElementById('modalTitle').textContent = 'Edit Anggota'
   document.getElementById('fNama').value    = m.nama    || ''
   document.getElementById('fInisial').value = m.inisial || ''
   document.getElementById('fJabatan').value = m.jabatan || ''
   document.getElementById('fUrutan').value  = m.urutan  || 0
   document.getElementById('fAktif').checked = !!m.aktif
+  // reset dulu, baru set state foto — urutan ini penting!
   resetModal()
+  currentFotoUrl  = m.foto_url      || null
   currentPosition = m.foto_position || 'center center'
   if (m.foto_url) {
     const img = document.getElementById('fotoPreviewImg')
