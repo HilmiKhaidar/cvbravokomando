@@ -59,7 +59,7 @@
 
     /* ── Crop Modal ── */
     .crop-modal-overlay {
-      position:fixed;inset:0;z-index:200;
+      position:fixed;inset:0;z-index:300;
       background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
       display:flex;align-items:center;justify-content:center;padding:1rem;
     }
@@ -343,13 +343,13 @@ function openCropModal(dataUrl) {
   const overlay = document.getElementById('cropModalOverlay')
   const img     = document.getElementById('cropImage')
 
-  // Destroy existing cropper
+  // Destroy existing cropper dulu
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
 
-  img.src = dataUrl
   overlay.classList.remove('hidden')
 
-  // Init Cropper setelah gambar load
+  // Reset src dulu supaya onload selalu trigger meski src sama
+  img.src = ''
   img.onload = () => {
     cropperInstance = new Cropper(img, {
       aspectRatio: NaN,
@@ -366,18 +366,24 @@ function openCropModal(dataUrl) {
       cropBoxMovable: true,
       cropBoxResizable: true,
     })
-    // Set active ratio button
     document.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.remove('active'))
     document.getElementById('ratioFree').classList.add('active')
   }
+  // Set src setelah onload terdaftar
+  img.src = dataUrl
 }
 
 function closeCropModal() {
   document.getElementById('cropModalOverlay').classList.add('hidden')
   if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
-  // Kalau cancel dan belum ada croppedBlob, reset foto
+  // Kalau cancel dan belum pernah crop dan tidak ada foto existing → reset
   if (!croppedBlob && !currentFotoUrl) {
     resetFotoState()
+  }
+  // Restore upload text yang benar
+  if (!croppedBlob) {
+    document.getElementById('uploadText').textContent =
+      currentFotoUrl ? 'Ganti foto' : 'Klik untuk upload foto'
   }
 }
 
@@ -412,7 +418,7 @@ function applyCrop() {
     if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null }
 
     btn.disabled = false
-    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Gunakan Foto'
+    btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Gunakan Foto`
   }, 'image/jpeg', 0.92)
 }
 
@@ -427,9 +433,16 @@ function cropperFlipX() {
 function setCropRatio(ratio) {
   if (cropperInstance) cropperInstance.setAspectRatio(ratio)
   document.querySelectorAll('.crop-ratio-btn').forEach(b => b.classList.remove('active'))
-  const map = { [NaN]: 'ratioFree', [1]: 'ratio11', [4/3]: 'ratio43', [3/4]: 'ratio34', [16/9]: 'ratio169' }
-  const key = Object.keys(map).find(k => (isNaN(k) && isNaN(ratio)) || Number(k) === ratio)
-  if (key) document.getElementById(map[key])?.classList.add('active')
+  // Cari button yang sesuai berdasarkan onclick attribute
+  const ratioMap = [
+    { id: 'ratioFree', val: NaN },
+    { id: 'ratio11',   val: 1 },
+    { id: 'ratio43',   val: 4/3 },
+    { id: 'ratio34',   val: 3/4 },
+    { id: 'ratio169',  val: 16/9 },
+  ]
+  const match = ratioMap.find(r => isNaN(r.val) ? isNaN(ratio) : Math.abs(r.val - ratio) < 0.001)
+  if (match) document.getElementById(match.id)?.classList.add('active')
 }
 
 /* ═══════════════════════════════
@@ -521,6 +534,9 @@ function openEdit(m) {
     initEl.style.display = 'none'
     document.getElementById('uploadText').textContent = 'Ganti foto'
     document.getElementById('removePhotoBtn').classList.remove('hidden')
+    // rawDataUrl = null karena foto existing adalah URL, bukan dataURL lokal
+    // editCropBtn disembunyikan karena tidak bisa re-crop foto dari URL (cross-origin)
+    document.getElementById('editCropBtn').classList.add('hidden')
   } else {
     // Tidak ada foto — tampilkan inisial
     currentFotoUrl = null
