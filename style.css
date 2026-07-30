@@ -477,11 +477,11 @@ textarea { font-family: inherit; }
 .tim-card:hover { box-shadow: var(--shadow-md); border-color: rgba(14,165,233,.3); }
 
 .tim-photo {
-  height: 11rem; position: relative; overflow: hidden;
+  height: 14rem; position: relative; overflow: hidden;
   background: linear-gradient(135deg, #0ea5e9, #1e40af);
   display: flex; align-items: center; justify-content: center;
 }
-.tim-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.tim-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
 .tim-avatar {
   width: 4.5rem; height: 4.5rem; border-radius: 50%;
   background: rgba(255,255,255,.2);

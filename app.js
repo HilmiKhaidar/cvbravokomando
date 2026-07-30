@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════ */
 const SUPABASE_URL = 'https://utmuwelyakuxdxokwhnl.supabase.co'
 const SUPABASE_ANON_KEY = 'sb_publishable_2lOaSrEYxwgF3j6sktjnDQ_2oipXveR'
-const s b = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /* ═══════════════════════════════════════════
    NAVBAR — scroll effect + hamburger
@@ -13,7 +13,7 @@ const hamburger = document.getElementById('hamburger')
 const navLinks  = document.getElementById('navLinks')
 
 window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 50)
+  navbar?.classList.toggle('scrolled', window.scrollY > 50)
 })
 
 hamburger?.addEventListener('click', () => {
